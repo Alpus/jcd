@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block body %}
+
+<div class="card" style='height: 1920px; width: 1080px;' id="card">
+	<div class="card-content center-align" style='height: 200px;'>
+		<h1>Who created this peace of art?</h1>
+	</div>
+	<div class="card-action" style='height: 200px;'>
+		<div class="row center-align">
+			<div class="col s4">
+				<a href="#">
+					<h3 class="red">Dimka Tochilka</h3>
+				</a>
+			</div>
+			<div class="col s4">
+				<a href="#">
+					<h3 class="red">Sashka Kakashka</h3>
+				</a>
+			</div>
+			<div class="col s4">
+				<a href="#">
+					<h3 class="green">Schjerfbeck, Helene</h3>
+				</a>
+			</div>
+		</div>
+	</div>
+	<div class="card-image">
+		<img src="http://kokoelmat.fng.fi/app?action=image&iid=H0108500&profile=topicartworkbignew" style='height: 1300px; width: auto; display: block;margin: 0 auto;'>
+		<span class="card-title center-align" style='width: 1080px;'>
+			<h2>Omakuva, en face I (1945)</h2>
+		</span>
+	</div>
+	<div class="card-content row" style='height: 200px;'>
+		<div class="col s6 align-left">
+			<h2>Current score: 17</h2>
+		</div>
+		<div class="col s6 align-right">
+			<h2>Day best score: 24</h2>
+		</a>
+		</div>
+	</div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // initialize the viewer
+        $('#answer0, #answer1, #answer2').click(function (event) {
+            var value = $(event.target).val();
+            $.ajax(
+                {
+                    url: '/',
+                    type: 'POST',
+                    data: 'value=' + encodeURIComponent(value),
+                    success: function (jsonResponse) {
+                    	var objresponse = JSON.parse(jsonResponse);
+                    	for (let number = 0; number < 3; number++) {
+                        	answer_obj = $("#answer" + number)
+                        	answer_obj.removeClass("btn-default")
+                        	console.log(answer_obj.text())
+                        	console.log(objresponse['answer'])
+                        	if (answer_obj.text() === objresponse['answer']) {
+                        		answer_obj.addClass("btn-success")
+                        	} else {
+                        		answer_obj.addClass("btn-danger")
+                        	}
+						}
+                    	setTimeout(function () {
+					        if (objresponse['verdict'] === 'OK') {
+                                $("#pic_link").attr('src', objresponse['link']);
+                                $("#pic_name").text(objresponse['pic_name']);
+                                $("#score").text('Счет: ' + objresponse['count']);
+                                for (i = 0; i < 3; i++) {
+                                	number = objresponse['authors'][i][0];
+                                	name = objresponse['authors'][i][1];
+                                	question_id = objresponse['authors'][i][2];
+                                	answer_name = "#answer" + number;
+                                	key = name + ';' + question_id;
+								    $(answer_name).text(name);
+								    $(answer_name).attr('value', key);
+								}
+
+								for (let number = 0; number < 3; number++) {
+                                	answer_obj = $("#answer" + number);
+                                	answer_obj.removeClass("btn-success");
+                                	answer_obj.removeClass("btn-danger");
+                                	answer_obj.addClass("btn-default");
+                            	}
+							} else {
+								location.reload();
+							}
+					    }, 1200);
+                    },
+                    error: function () {
+                        location.reload();
+                    }
+                });
+            event.preventDefault();
+        });
+    });
+</script>
+
+{% end %}
