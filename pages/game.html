@@ -3,40 +3,32 @@
 
 <div class="card" style='height: 1920px; width: 1080px;' id="card">
 	<div class="card-content center-align" style='height: 200px;'>
-		<h1>Who created this peace of art?</h1>
+		<h1>GuessWho?</h1>
 	</div>
 	<div class="card-action" style='height: 200px;'>
 		<div class="row center-align">
-			<div class="col s4">
-				<a href="#">
-					<h3 class="red">Dimka Tochilka</h3>
-				</a>
-			</div>
-			<div class="col s4">
-				<a href="#">
-					<h3 class="red">Sashka Kakashka</h3>
-				</a>
-			</div>
-			<div class="col s4">
-				<a href="#">
-					<h3 class="green">Schjerfbeck, Helene</h3>
-				</a>
-			</div>
+			{% for n, name in authors %}
+				<div class="col s4">
+                    <a href="#" id="answer{{ n }}" value="{{ name }};{{ question_id }}"><h2>{{ name }}</h2></a>
+				</div>
+			{% end %}
 		</div>
 	</div>
 	<div class="card-image">
-		<img src="http://kokoelmat.fng.fi/app?action=image&iid=H0108500&profile=topicartworkbignew" style='height: 1300px; width: auto; display: block;margin: 0 auto;'>
+		<img src="{{img_link}}" style='height: 1300px; width: auto; display: block;margin: 0 auto;'>
 		<span class="card-title center-align" style='width: 1080px;'>
-			<h2>Omakuva, en face I (1945)</h2>
+			<h2>{{title}} ({{year}})</h2>
 		</span>
 	</div>
-	<div class="card-content row" style='height: 200px;'>
-		<div class="col s6 align-left">
-			<h2>Current score: 17</h2>
-		</div>
-		<div class="col s6 align-right">
-			<h2>Day best score: 24</h2>
-		</a>
+	<div class="card-content" style='height: 200px;'>
+		<div class="row center-align">
+			<div class="col s6 align-left">
+				<h2>Current score: {{cur_score}}</h2>
+			</div>
+			<div class="col s6 align-right">
+				<h2>Day best score: {{top_score}}</h2>
+			</a>
+			</div>
 		</div>
 	</div>
 </div>
