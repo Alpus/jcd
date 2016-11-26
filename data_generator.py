@@ -35,7 +35,7 @@ class ImageSample:
 class SampleGenerator:
     """ Generates random image data sample. """
     def __init__(self):
-        self.image_data = pickle.load(open('images.pickle', 'rb'))
+        self.image_data = pickle.load(open('data/images.pickle', 'rb'))
         self.authors = frozenset([x['creator'] for x in image_data])
     
     def get_random_sample(self):
