@@ -1,43 +1,71 @@
 {% extends "base.html" %}
 {% block body %}
 
-<div class="card" style='height: 1920px; width: 1080px;' id="card">
+<div class="card" style='height: 1920px; width: 1080px;' id="main_card">
 	<div class="card-content center-align" style='height: 200px;'>
-		<h1>GuessWho?</h1>
+		<h1>GuessWho</h1>
 	</div>
 	<div class="card-action" style='height: 200px;'>
 		<div class="row center-align">
 			{% for n, name in authors %}
-				<div class="col s4">
-                    <a href="#" id="answer{{ n }}" value="{{ name }};{{ question_id }}"><h2>{{ name }}</h2></a>
+				<div class="col s4 valign-wrapper" style='height: 200px;'>
+                    <a href="#" class="valign">
+                        <h3 id="name_answer{{ n }}" value="{{ n }};{{ question_id }}">{{ name }}</h3>
+                    </a>
 				</div>
 			{% end %}
 		</div>
 	</div>
-	<div class="card-image">
-		<img src="{{img_link}}" style='height: 1300px; width: auto; display: block;margin: 0 auto;'>
+	<div class="card-image" style='height: 1300px;'>
+	   <img id="img_link" src="{{ img_link }}" style='max-width: 100%; max-height: 100%; width: auto; height: auto; position: absolute; top: 0; bottom: 0; left: 0; right: 0; margin: auto;'>
 		<span class="card-title center-align" style='width: 1080px;'>
-			<h2>{{title}} ({{year}})</h2>
+			<h2 id="title_year" style="text-shadow: 3px 0 0 #000, 0 -3px 0 #000, 0 3px 0 #000, -3px 0 0 #000;">{{ title_year }}</h2>
 		</span>
 	</div>
 	<div class="card-content" style='height: 200px;'>
 		<div class="row center-align">
 			<div class="col s6 align-left">
-				<h2>Current score: {{cur_score}}</h2>
+				<h2 id="cur_score">Current score: {{cur_score}}</h2>
 			</div>
 			<div class="col s6 align-right">
-				<h2>Day best score: {{top_score}}</h2>
-			</a>
+				<h2 id="top_score">Day best score: {{top_score}}</h2>
 			</div>
 		</div>
 	</div>
 </div>
 
+<div class="card" style='height: 1920px; width: 1080px;' id="lah_card" style="display: none;">
+    <div class="card-content center-align" style='height: 200px;'>
+        <h1>GuessWho</h1>
+    </div>
+    <div class="card-action" style='height: 160px;'>
+        <div class="row center-align">
+            <a href="#">
+                <h3 id="try_again">Try again</h3>
+            </a>
+        </div>
+    </div>
+    <div class="card-content center-align" style='height: 130px;'>
+        <div class="center-align">
+            <h2 id="res_text"></h2>
+        </div>
+    </div>
+    <div class="card-content center-align" style='height: 200px;'>
+        <h2> You can find these pieces of art and lots of others at Finnish National Gallery: </h2>
+    </div>
+    <div class="card-content center-align">
+        <iframe width="1000" height="1000" frameborder="0" style="border:0"
+src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJb1XSbTIKkkYRq_1QhiJZGJk&key=AIzaSyAaq09Y_ndAyMf9dExN_qqv7HzExOEcmqs" allowfullscreen></iframe>
+    </div>
+</div>
+
 <script>
     $(document).ready(function () {
+        $("#lah_card").hide()
         // initialize the viewer
-        $('#answer0, #answer1, #answer2').click(function (event) {
-            var value = $(event.target).val();
+        $('#name_answer0, #name_answer1, #name_answer2').click(function (event) {
+            var value = $(event.target).attr("value");
+            console.log(value)
             $.ajax(
                 {
                     url: '/',
@@ -45,48 +73,57 @@
                     data: 'value=' + encodeURIComponent(value),
                     success: function (jsonResponse) {
                     	var objresponse = JSON.parse(jsonResponse);
+                        console.log(jsonResponse)
                     	for (let number = 0; number < 3; number++) {
-                        	answer_obj = $("#answer" + number)
-                        	answer_obj.removeClass("btn-default")
-                        	console.log(answer_obj.text())
-                        	console.log(objresponse['answer'])
-                        	if (answer_obj.text() === objresponse['answer']) {
-                        		answer_obj.addClass("btn-success")
+                        	var answer_obj = $("#name_answer" + number)
+                        	// answer_obj.removeClass("btn-default")
+                        	if (number === objresponse['correct_id']) {
+                        		//answer_obj.parent().parent().addClass("green", 100)
+                                answer_obj.parent().parent().css('background-color', '#00FF7F');
                         	} else {
-                        		answer_obj.addClass("btn-danger")
+                        		//answer_obj.parent().parent().addClass("red", 100)
+                                answer_obj.parent().parent().css('background-color', '#FF0000');
                         	}
 						}
                     	setTimeout(function () {
 					        if (objresponse['verdict'] === 'OK') {
-                                $("#pic_link").attr('src', objresponse['link']);
-                                $("#pic_name").text(objresponse['pic_name']);
-                                $("#score").text('Счет: ' + objresponse['count']);
-                                for (i = 0; i < 3; i++) {
-                                	number = objresponse['authors'][i][0];
-                                	name = objresponse['authors'][i][1];
-                                	question_id = objresponse['authors'][i][2];
-                                	answer_name = "#answer" + number;
-                                	key = name + ';' + question_id;
-								    $(answer_name).text(name);
-								    $(answer_name).attr('value', key);
+                                $("#img_link").attr('src', objresponse['img_link']);
+                                $("#title_year").text(objresponse['title_year']);
+                                $("#cur_score").text('Current score: ' + objresponse['cur_score']);
+                                $("#top_score").text('Day best score: ' + objresponse['top_score']);
+                                question_id = objresponse['question_id'];
+                                for (let number = 0; number < 3; number++) {
+                                	name = objresponse['authors'][number][1];
+                                	value = number.toString() + ';' + question_id;
+                                    right_answer_id = "#name_answer" + number
+								    $(right_answer_id).text(name);
+								    $(right_answer_id).attr('value', value);
+                                    //$(right_answer_id).parent().parent().removeClass("red", 50);
+                                    //$(right_answer_id).parent().parent().removeClass("green", 50);
+                                    $(right_answer_id).parent().parent().css('background-color', '');
+                                    $(right_answer_id).parent().parent().css('background-color', '');
 								}
-
-								for (let number = 0; number < 3; number++) {
-                                	answer_obj = $("#answer" + number);
-                                	answer_obj.removeClass("btn-success");
-                                	answer_obj.removeClass("btn-danger");
-                                	answer_obj.addClass("btn-default");
-                            	}
 							} else {
-								location.reload();
+                                console.log("Fuck")
+                                $("#main_card").hide()
+                                $("#lah_card").show()
+                                var res_string = "Your score: " + objresponse['cur_score']
+                                if (objresponse['cur_score'] > objresponse['top_score']) {
+                                    res_string = 'New high score: ' + objresponse['cur_score'] + "!"
+                                }
+                                $("#res_text").text(res_string)
 							}
-					    }, 1200);
+					    }, 1000);
                     },
                     error: function () {
-                        location.reload();
+                        
                     }
                 });
             event.preventDefault();
+        });
+
+        $("#try_again").click(function (event) {
+            location.reload()
         });
     });
 </script>

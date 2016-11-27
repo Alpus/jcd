@@ -23,11 +23,11 @@ class ImageSample:
 
 class SampleGenerator:
     def __init__(self):
-        self.image_data = pickle.load(open('data/images.pickle', 'rb'))
+        self.image_data = pickle.load(open('data/new_images.pickle', 'rb'))
         self.authors = frozenset([x['creator'] for x in self.image_data])
     
     def get_random_sample(self, cur_score=0):
-        img_id = random.randint(0, len(self.image_data))
+        img_id = random.randint(0, len(self.image_data) - 1)
         wrong_authors = random.sample(self.authors - frozenset([self.image_data[img_id]['creator']]), 2)
         return ImageSample(self.image_data[img_id], wrong_authors, cur_score)
 
